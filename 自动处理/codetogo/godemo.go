@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"howett.net/plist"
 	"io"
-	"log"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -22,47 +21,42 @@ func main() {
 	inputFile, err := os.Open("setting.plist")
 	if err != nil {
 		fmt.Println("打开文件失败:", err)
-		return
 	}
 	defer inputFile.Close()
 
 	content, err := io.ReadAll(inputFile)
 	if err != nil {
 		fmt.Println("读取文件失败:", err)
-		return
 	}
 	ipaPath, err := getIPAFilePath()
 	println(ipaPath)
 	if err != nil {
 		fmt.Println("获取 IPA 文件路径失败:", err)
-		return
 	}
 
 	infoMap, err := ParseInfoPlistFromIPA(ipaPath)
-	if err != nil {
-		log.Fatal(err)
+	if infoMap != nil {
+		//换掉setting.plist模板的内容
+		newContent := strings.Replace(string(content), "huandiao", fileName, -1)
+		newContent = strings.Replace(newContent, "com.udcs.jplay", infoMap["CFBundleIdentifier"].(string), -1)
+		fmt.Println("获取的BundleId:", infoMap["CFBundleIdentifier"].(string))
+		newContent = strings.Replace(newContent, "王者传奇", infoMap["CFBundleDisplayName"].(string), -1)
+		fmt.Println("获取的应用名字:", infoMap["CFBundleDisplayName"].(string))
+
+		err = os.WriteFile(fileName+".plist", []byte(newContent), 0644)
+
+		if err != nil {
+			fmt.Println("写入文件失败:", err)
+
+		}
+
+		err = os.Rename(ipaPath, fileName+".ipa")
+		if err != nil {
+			fmt.Println("重命名文件失败:", err)
+		}
 	}
 
-	//换掉setting.plist模板的内容
-	newContent := strings.Replace(string(content), "huandiao", fileName, -1)
-	newContent = strings.Replace(newContent, "com.udcs.jplay", infoMap["CFBundleIdentifier"].(string), -1)
-	fmt.Println("获取的BundleId:", infoMap["CFBundleIdentifier"].(string))
-	newContent = strings.Replace(newContent, "王者传奇", infoMap["CFBundleDisplayName"].(string), -1)
-	fmt.Println("获取的应用名字:", infoMap["CFBundleDisplayName"].(string))
-
-	err = os.WriteFile(fileName+".plist", []byte(newContent), 0644)
-
-	if err != nil {
-		fmt.Println("写入文件失败:", err)
-		return
-	}
-
-	err = os.Rename(ipaPath, fileName+".ipa")
-	if err != nil {
-		fmt.Println("重命名文件失败:", err)
-		return
-	}
-
+	fmt.Scanln()
 }
 
 func getIPAFilePath() (string, error) {
@@ -125,7 +119,7 @@ func generateRandomString(length int) string {
 	return string(str)
 }
 
-// 通过"howett.net/plist"解析ipa的info.plist内容
+// ParseInfoPlistFromIPA 通过"howett.net/plist"解析ipa的info.plist内容
 func ParseInfoPlistFromIPA(ipaFilePath string) (map[string]interface{}, error) {
 	ipaFile, err := os.Open(ipaFilePath)
 	if err != nil {
