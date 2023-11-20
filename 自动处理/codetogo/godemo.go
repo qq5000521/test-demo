@@ -42,22 +42,26 @@ func main() {
 		fmt.Println("获取的BundleId:", infoMap["CFBundleIdentifier"].(string))
 
 		var replaceString string
-		fmt.Print("请输入APP名字(不填写直接回车会自动获取): ")
+		fmt.Print("请输入APP名字(回车自动读取ipa包内的名称): ")
 		fmt.Scanln(&replaceString)
 
-		if len(replaceString) == 0 {
-			newContent = strings.Replace(newContent, "王者传奇", infoMap["CFBundleDisplayName"].(string), -1)
-			fmt.Println("获取的应用名字:", infoMap["CFBundleDisplayName"].(string))
-		} else {
-			newContent = strings.Replace(newContent, "王者传奇", replaceString, -1)
-			fmt.Println("获取的应用名字:", replaceString)
+		for len(replaceString) == 0 {
+			// 如果用户没有输入要替换的字符串，则尝试从 Info.plist 文件中获取 CFBundleDisplayName 字段的值
+			if infoMap["CFBundleDisplayName"] != nil {
+				replaceString = infoMap["CFBundleDisplayName"].(string)
+				fmt.Println("获取的应用名字:", replaceString)
+			} else {
+				fmt.Print("未读取到app名字,请手动输入: ")
+				fmt.Scanln(&replaceString)
+			}
 		}
 
-		err = os.WriteFile(fileName+".plist", []byte(newContent), 0644)
+		fmt.Println("将应用名字替换为:", replaceString)
+		newContent = strings.Replace(newContent, "王者传奇", replaceString, -1)
 
+		err = os.WriteFile(fileName+".plist", []byte(newContent), 0644)
 		if err != nil {
 			fmt.Println("写入文件失败:", err)
-
 		}
 
 		err = os.Rename(ipaPath, fileName+".ipa")
