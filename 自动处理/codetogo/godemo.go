@@ -66,6 +66,7 @@ func main() {
 		}
 	}
 
+	fmt.Println("运行完毕,回车关闭窗口!")
 	fmt.Scanln()
 }
 
