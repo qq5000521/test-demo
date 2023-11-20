@@ -28,8 +28,8 @@ func main() {
 	if err != nil {
 		fmt.Println("读取文件失败:", err)
 	}
+
 	ipaPath, err := getIPAFilePath()
-	println(ipaPath)
 	if err != nil {
 		fmt.Println("获取 IPA 文件路径失败:", err)
 	}
