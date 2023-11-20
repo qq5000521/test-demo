@@ -12,7 +12,8 @@
 
 ### Go脚本(推荐用这个版本20231120日更新)
 
-#### go run.\godemo.go
+#### 用go run.\godemo.go
+#### 或
 #### 双击运行 go全自动获取处理.exe
 
 功能：go版本会自动读取CFBundleIdentifier和CFBundleDisplayName的值，不用手动输入，自动替换ipa文件名，自动修改模板并且创建plist文件。
