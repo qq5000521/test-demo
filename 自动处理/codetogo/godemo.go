@@ -40,8 +40,18 @@ func main() {
 		newContent := strings.Replace(string(content), "huandiao", fileName, -1)
 		newContent = strings.Replace(newContent, "com.udcs.jplay", infoMap["CFBundleIdentifier"].(string), -1)
 		fmt.Println("获取的BundleId:", infoMap["CFBundleIdentifier"].(string))
-		newContent = strings.Replace(newContent, "王者传奇", infoMap["CFBundleDisplayName"].(string), -1)
-		fmt.Println("获取的应用名字:", infoMap["CFBundleDisplayName"].(string))
+
+		var replaceString string
+		fmt.Print("请输入APP名字(不填写直接回车会自动获取): ")
+		fmt.Scanln(&replaceString)
+
+		if len(replaceString) == 0 {
+			newContent = strings.Replace(newContent, "王者传奇", infoMap["CFBundleDisplayName"].(string), -1)
+			fmt.Println("获取的应用名字:", infoMap["CFBundleDisplayName"].(string))
+		} else {
+			newContent = strings.Replace(newContent, "王者传奇", replaceString, -1)
+			fmt.Println("获取的应用名字:", replaceString)
+		}
 
 		err = os.WriteFile(fileName+".plist", []byte(newContent), 0644)
 
