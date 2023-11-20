@@ -46,9 +46,8 @@ func main() {
 	//换掉setting.plist模板的内容
 	newContent := strings.Replace(string(content), "huandiao", fileName, -1)
 	newContent = strings.Replace(newContent, "com.udcs.jplay", infoMap["CFBundleIdentifier"].(string), -1)
-	newContent = strings.Replace(newContent, "王者传奇", infoMap["CFBundleDisplayName"].(string), -1)
-
 	fmt.Println("获取的BundleId:", infoMap["CFBundleIdentifier"].(string))
+	newContent = strings.Replace(newContent, "王者传奇", infoMap["CFBundleDisplayName"].(string), -1)
 	fmt.Println("获取的应用名字:", infoMap["CFBundleDisplayName"].(string))
 
 	err = os.WriteFile(fileName+".plist", []byte(newContent), 0644)
